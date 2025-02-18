@@ -1,26 +1,21 @@
-from config import Settings
+from src.config import Settings
 import requests
 import json
 from sqlalchemy import create_engine
 import pandas as pd
-
+import logging
+from requests.adapters import HTTPAdapter,Retry
+from src.endpoints.endpoints import Endpoints
 
 settings=Settings()
+endpoints=Endpoints().get_endpoints()
 
 
 app_key=settings.APP_KEY
 app_secret=settings.APP_SECRET
 base_url=settings.BASE_URL
 
-endpoints=[{
-    'resource':'geral/clientes/',    
-    'action':'ListarClientes',
-    'params':{
-        "pagina": 1,
-        "registros_por_pagina": 100,
-        "apenas_importado_api": "N"}
-   
-}]
+
 
 HEADERS = {
     'Content-Type': 'application/json',
@@ -29,7 +24,8 @@ HEADERS = {
 
 
 def request (resource:str,body:dict)->dict:
-    response=requests.post(
+    requests_session=custom_session()
+    response=requests_session.post(
         url=f'{base_url}{resource}',
         headers=HEADERS,
         json=body        
@@ -66,10 +62,18 @@ def save_into_db(resource:str,content:dict,page:int):
     else:
         df.to_sql(db_name,engine,if_exists="append",index=False)
     
+def custom_session():    
+    session = requests.Session()
+    retry = Retry(connect=3, backoff_factor=0.5,status_forcelist=[ 502, 503, 504 ])
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+    return session
 
 for endpoint in endpoints:
     resource=endpoint.get("resource")
     action=endpoint.get("action")
+    chave=endpoint.get("chave")
     params=endpoint.get("params")
 
 
@@ -77,7 +81,7 @@ for endpoint in endpoints:
     print(total_of_pages)
     records_fetched=0
     # for page in range(1,total_of_pages+1):
-    for page in range(1,3):
+    for page in range(1,4):
         params["pagina"]=page
         body={
             "call":action,
@@ -89,8 +93,8 @@ for endpoint in endpoints:
         response=request(resource,body)
         records_fetched+=response.get("registros",0)
 
-        contents=response.get("clientes_cadastro",[])
-        black_list=["tags","recomendacoes","homepage","fax_ddd","bloquear_exclusao","produtor_rural"]
+        contents=response.get(chave,[])
+        black_list=["tags","recomendacoes","homepage","fax_ddd","bloquear_exclusao","produtor_rural","enderecoEntrega"]
         # lista=[key for key in content.keys() if key not in black_list]
         lista = [{key: value for key, value in content.items() if key not in black_list} for content in contents]
         # lista=[content for content in contents if content.keys() not in black_list]
@@ -98,7 +102,7 @@ for endpoint in endpoints:
         #     for key in black_list:
         #         content.pop(key,None)
         
-        print(f"Page {page} fetched {records_fetched} records")
+        print(f"Page {page} fetched {records_fetched} records from {resource}")
         save_into_db(resource,lista,page)
 
 

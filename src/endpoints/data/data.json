@@ -1,0 +1,27 @@
+[{
+    "resource":"geral/clientes/",    
+    "action":"ListarClientes",
+    "chave":"clientes_cadastro",
+    "params":{
+        "pagina": 1,
+        "registros_por_pagina": 100,
+        "apenas_importado_api": "N"}},
+    
+    {"resource":"geral/categorias/",    
+    "action":"ListarCategorias",
+    "chave":"categoria_cadastro",
+    "params":{
+        "pagina": 1,
+        "registros_por_pagina": 100,
+        "apenas_importado_api": "N"}},
+    
+    {"resource":"geral/empresas/",    
+    "action":"ListarEmpresas",
+    "chave":"empresas_cadastro",
+    "params":{
+        "pagina": 1,
+        "registros_por_pagina": 100,
+        "apenas_importado_api": "N"}
+
+   
+}]
