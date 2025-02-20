@@ -1,12 +1,11 @@
-[{
-    "resource":"geral/clientes/",    
+[{  "resource":"geral/clientes/",    
     "action":"ListarClientes",
     "chave":"clientes_cadastro",
     "params":{
         "pagina": 1,
         "registros_por_pagina": 100,
         "apenas_importado_api": "N"}},
-    
+
     {"resource":"geral/categorias/",    
     "action":"ListarCategorias",
     "chave":"categoria_cadastro",
@@ -14,14 +13,24 @@
         "pagina": 1,
         "registros_por_pagina": 100,
         "apenas_importado_api": "N"}},
-    
+
     {"resource":"geral/empresas/",    
     "action":"ListarEmpresas",
     "chave":"empresas_cadastro",
     "params":{
         "pagina": 1,
         "registros_por_pagina": 100,
-        "apenas_importado_api": "N"}
+        "apenas_importado_api": "N"}},
+    
+
+     {  "resource":"financas/mf/",    
+        "action":"ListarMovimentos",
+        "chave":"movimentos",
+        "params":{
+            "nPagina": 1,
+            "nRegPorPagina": 500}
+          
 
    
 }]
+
