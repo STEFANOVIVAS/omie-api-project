@@ -1,7 +1,7 @@
 from src.config import Settings
 import requests
 import json
-from sqlalchemy import create_engine,text
+from src.db.database import Database
 import pandas as pd
 import logging
 from requests.adapters import HTTPAdapter,Retry
@@ -48,48 +48,8 @@ def get_total_pages(resource:str,action:str,params:dict)->int:
     total_of_pages=response.get("total_de_paginas",response.get("nTotPaginas"))
     return total_of_pages
 
-def save_file(resource:str,content:dict):
-    file_name=resource.split("/")[-2]
-    content=json.dumps(content)
-    with open(f"{file_name}.json","w") as file:
-        file.write(content)
-def get_engine():
-    engine=create_engine(f"postgresql://{settings.DB_USERNAME}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}")
-    return engine
-def alter_table_schema(table_name:str,df:pd.DataFrame):
-    engine=get_engine()
-    exist_columns=get_columns_db(table_name)
-    new_columns=[column for column in df.columns if column not in exist_columns]
-    connection=engine.connect()
-    connection.begin()
-    for column in new_columns:
-        query=text(f"""ALTER TABLE {table_name} ADD COLUMN "{column}" TEXT""")
-        connection.execute(query)
-        print(f"Column {column} added to table {table_name}")
-    connection.commit()
-    connection.close()
 
-def get_columns_db(table_name:str):
-    engine=get_engine()
-    connection=engine.connect()
-    query=text(f"""SELECT column_name
-    FROM information_schema.columns
-    WHERE table_name = '{table_name}'""")
-    result=connection.execute(query)
-    columns=[column[0] for column in result]
-    return columns
 
-def save_into_db(resource:str,content:dict,page:int):
-    table_name=resource.split("/")[-2]
-    df=pd.json_normalize(content,sep="_")
-    engine=get_engine()
-    
-    
-    if page==1:
-        df.to_sql(table_name,engine,if_exists="replace",index=False)
-    else:
-        alter_table_schema(table_name,df)
-        df.to_sql(table_name,engine,if_exists="append",index=False)
     
 def custom_session():    
     session = requests.Session()
@@ -138,7 +98,9 @@ for endpoint in endpoints:
         #         content.pop(key,None)
         
         print(f"Page {page} fetched {records_fetched} records from {resource}")
-        save_into_db(resource,lista,page)
+        db=Database()
+        db.save_into_db(resource,lista,page)
+        
 
 
 
