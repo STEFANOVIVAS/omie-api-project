@@ -1,36 +1,51 @@
 [{  "resource":"geral/clientes/",    
     "action":"ListarClientes",
-    "chave":"clientes_cadastro",
+    "data_source":"clientes_cadastro",
     "params":{
         "pagina": 1,
         "registros_por_pagina": 100,
-        "apenas_importado_api": "N"}},
+        "apenas_importado_api": "N"},
+    "page_label": "pagina"},
 
     {"resource":"geral/categorias/",    
     "action":"ListarCategorias",
-    "chave":"categoria_cadastro",
+    "data_source":"categoria_cadastro",
     "params":{
         "pagina": 1,
         "registros_por_pagina": 100,
-        "apenas_importado_api": "N"}},
+        "apenas_importado_api": "N"},
+    "page_label": "pagina"},
 
     {"resource":"geral/empresas/",    
     "action":"ListarEmpresas",
-    "chave":"empresas_cadastro",
+    "data_source":"empresas_cadastro",
     "params":{
         "pagina": 1,
         "registros_por_pagina": 100,
-        "apenas_importado_api": "N"}},
+        "apenas_importado_api": "N"},
+    "page_label": "pagina"},
     
 
      {  "resource":"financas/mf/",    
         "action":"ListarMovimentos",
-        "chave":"movimentos",
+        "data_source":"movimentos",
         "params":{
             "nPagina": 1,
-            "nRegPorPagina": 500}
+            "nRegPorPagina": 500},
+        "page_label": "nPagina"},
+
+        {  "resource":"geral/contacorrente/",    
+        "action":"ListarContasCorrentes",
+        "data_source":"ListarContasCorrentes",
+        "params":{
+           "pagina": 1,
+            "registros_por_pagina": 100,
+            "apenas_importado_api": "N"},
+        "page_label": "pagina"}   
+          
+          
           
 
    
-}]
+]
 
